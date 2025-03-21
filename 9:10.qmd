@@ -1,0 +1,73 @@
+---
+title: "9/10"
+editor: visual
+author: "Josh Ray"
+date: "`r Sys.Date()`"
+format:
+  html:
+    self-contained: true
+---
+#Question1
+```{r6 setup, echo=TRUE, message=FALSE, warning=FALSE}
+?airquality
+install.packages("visdat")
+
+library(visdat)
+```
+
+
+#Question2
+Yes this very much needs cleaning, lots of NA variables
+```{r5 setup, echo=TRUE, message=FALSE, warning=FALSE}
+vis_dat(airquality)
+```
+
+#Question3 I chose this variable because depleted ozones can lead to an increase in temperature
+```{r4 setup, echo=TRUE, message=FALSE, warning=FALSE}
+data(airquality)
+head(airquality)
+cleaned_data <- na.omit(airquality)
+> lm_model <- lm(Ozone ~ Temp, data = cleaned_data)
+```
+
+#Question4 This seems like a valid model
+```{r3 setup, echo=TRUE, message=FALSE, warning=FALSE}
+> summary(lm_model)
+
+Call:
+lm(formula = Ozone ~ Temp, data = cleaned_data)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-40.922 -17.459  -0.874  10.444 118.078 
+
+Coefficients:
+             Estimate Std. Error t value Pr(>|t|)    
+(Intercept) -147.6461    18.7553  -7.872 2.76e-12 ***
+Temp           2.4391     0.2393  10.192  < 2e-16 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 23.92 on 109 degrees of freedom
+Multiple R-squared:  0.488,	Adjusted R-squared:  0.4833 
+F-statistic: 103.9 on 1 and 109 DF,  p-value: < 2.2e-16
+```
+
+#Question5 The R2 is 0.48 which shows that the temperature does not show the variability of the ozone well
+```{r1}
+>augmented_data <- augment(lm_model, data = cleaned_data)
+```
+#Question7
+```{r2}
+library(ggplot2)
+> ggplot(augmented_data, aes(x = Ozone, y = .fitted)) +
++     geom_point() +  # Scatter plot of actual vs. predicted Ozone
++     geom_abline(intercept = 0, slope = 1, color = "red") +  # 1:1 line
++     labs(
++         title = "Actual vs Predicted Ozone",
++         subtitle = paste("Correlation:", round(cor(augmented_data$Ozone, augmented_data$.fitted), 2)),
++         x = "Actual Ozone",
++         y = "Predicted Ozone"
++     ) +
++     theme_minimal()
+```

@@ -1,0 +1,12 @@
+---
+title: "9/10"
+editor: visual
+author: "Josh Ray"
+date: "03.21.2025"
+output-dir: docs
+execute: 
+  echo: true 
+format:
+  html:
+    self-contained: true
+---
