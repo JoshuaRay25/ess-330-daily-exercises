@@ -2,12 +2,14 @@
 title: "9/10"
 editor: visual
 author: "Josh Ray"
-date: "`r Sys.Date()`"
+date: "03.21.2025"
+output-dir: docs
+execute: 
+  echo: true 
 format:
   html:
     self-contained: true
 ---
-#Question1
 ```{r6 setup, echo=TRUE, message=FALSE, warning=FALSE}
 ?airquality
 install.packages("visdat")
@@ -28,6 +30,7 @@ data(airquality)
 head(airquality)
 cleaned_data <- na.omit(airquality)
 > lm_model <- lm(Ozone ~ Temp, data = cleaned_data)
+knitr::include_graphics("~/Desktop/github/ess-330-daily-exercises/img")
 ```
 
 #Question4 This seems like a valid model
@@ -60,14 +63,21 @@ F-statistic: 103.9 on 1 and 109 DF,  p-value: < 2.2e-16
 #Question7
 ```{r2}
 library(ggplot2)
-> ggplot(augmented_data, aes(x = Ozone, y = .fitted)) +
-+     geom_point() +  # Scatter plot of actual vs. predicted Ozone
-+     geom_abline(intercept = 0, slope = 1, color = "red") +  # 1:1 line
-+     labs(
-+         title = "Actual vs Predicted Ozone",
-+         subtitle = paste("Correlation:", round(cor(augmented_data$Ozone, augmented_data$.fitted), 2)),
-+         x = "Actual Ozone",
-+         y = "Predicted Ozone"
-+     ) +
-+     theme_minimal()
+```{r9 ozone_plot, echo=FALSE, fig.cap="Actual vs Predicted Ozone"}
+library(ggplot2)
+
+ggplot(augmented_data, aes(x = Ozone, y = .fitted)) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1, color = "red") +
+  labs(
+    title = "Actual vs Predicted Ozone",
+    subtitle = paste("Correlation:", round(cor(augmented_data$Ozone, augmented_data$.fitted), 2)),
+    x = "Actual Ozone",
+    y = "Predicted Ozone"
+  ) +
+  theme_minimal()
+ggsave("plots/ozone_plot.png", width = 6, height = 4)
+![Image caption](~/Desktop/github/ess-330-daily-exercises/img)
+![Image caption](img/4cd508d6-5ff8-4bc2-b1f7-28962c8855ac.png
+ggsave(~/Desktop/github/ess-330-daily-exercises/imimg)              
 ```

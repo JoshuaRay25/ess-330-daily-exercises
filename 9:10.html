@@ -7,6 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Josh Ray">
+<meta name="dcterms.date" content="2025-03-21">
 
 <title>9/10</title>
 <style>
@@ -3071,7 +3072,7 @@ vertical-align: -.125em;
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">Invalid Date</p>
+      <p class="date">March 21, 2025</p>
     </div>
   </div>
   
@@ -3083,7 +3084,7 @@ vertical-align: -.125em;
 </header>
 
 
-<p>#Question1 ```{r6 setup, echo=TRUE, message=FALSE, warning=FALSE} ?airquality install.packages(“visdat”)</p>
+<p>```{r6 setup, echo=TRUE, message=FALSE, warning=FALSE} ?airquality install.packages(“visdat”)</p>
 <p>library(visdat)</p>
 <pre><code>
 
@@ -3091,7 +3092,7 @@ vertical-align: -.125em;
 Yes this very much needs cleaning, lots of NA variables
 ```{r5 setup, echo=TRUE, message=FALSE, warning=FALSE}
 vis_dat(airquality)</code></pre>
-<p>#Question3 I chose this variable because depleted ozones can lead to an increase in temperature <code>{r4 setup, echo=TRUE, message=FALSE, warning=FALSE} data(airquality) head(airquality) cleaned_data &lt;- na.omit(airquality) &gt; lm_model &lt;- lm(Ozone ~ Temp, data = cleaned_data)</code></p>
+<p>#Question3 I chose this variable because depleted ozones can lead to an increase in temperature <code>{r4 setup, echo=TRUE, message=FALSE, warning=FALSE} data(airquality) head(airquality) cleaned_data &lt;- na.omit(airquality) &gt; lm_model &lt;- lm(Ozone ~ Temp, data = cleaned_data) knitr::include_graphics(&quot;~/Desktop/github/ess-330-daily-exercises/img&quot;)</code></p>
 <p>#Question4 This seems like a valid model ```{r3 setup, echo=TRUE, message=FALSE, warning=FALSE} &gt; summary(lm_model)</p>
 <p>Call: lm(formula = Ozone ~ Temp, data = cleaned_data)</p>
 <p>Residuals: Min 1Q Median 3Q Max -40.922 -17.459 -0.874 10.444 118.078</p>
@@ -3104,16 +3105,23 @@ vis_dat(airquality)</code></pre>
 &gt;augmented_data &lt;- augment(lm_model, data = cleaned_data)</code></pre>
 <p>#Question7</p>
 <pre class="{r2}"><code>library(ggplot2)
-&gt; ggplot(augmented_data, aes(x = Ozone, y = .fitted)) +
-+     geom_point() +  # Scatter plot of actual vs. predicted Ozone
-+     geom_abline(intercept = 0, slope = 1, color = &quot;red&quot;) +  # 1:1 line
-+     labs(
-+         title = &quot;Actual vs Predicted Ozone&quot;,
-+         subtitle = paste(&quot;Correlation:&quot;, round(cor(augmented_data$Ozone, augmented_data$.fitted), 2)),
-+         x = &quot;Actual Ozone&quot;,
-+         y = &quot;Predicted Ozone&quot;
-+     ) +
-+     theme_minimal()</code></pre>
+```{r9 ozone_plot, echo=FALSE, fig.cap=&quot;Actual vs Predicted Ozone&quot;}
+library(ggplot2)
+
+ggplot(augmented_data, aes(x = Ozone, y = .fitted)) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1, color = &quot;red&quot;) +
+  labs(
+    title = &quot;Actual vs Predicted Ozone&quot;,
+    subtitle = paste(&quot;Correlation:&quot;, round(cor(augmented_data$Ozone, augmented_data$.fitted), 2)),
+    x = &quot;Actual Ozone&quot;,
+    y = &quot;Predicted Ozone&quot;
+  ) +
+  theme_minimal()
+ggsave(&quot;plots/ozone_plot.png&quot;, width = 6, height = 4)
+![Image caption](~/Desktop/github/ess-330-daily-exercises/img)
+![Image caption](img/4cd508d6-5ff8-4bc2-b1f7-28962c8855ac.png
+ggsave(~/Desktop/github/ess-330-daily-exercises/imimg)              </code></pre>
 
 </main>
 <!-- /main column -->
