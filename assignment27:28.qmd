@@ -1,0 +1,123 @@
+---
+title: "assignment27/28"
+format:
+  html:
+    self-contained: true
+---
+
+## Setup and Packages
+
+```{r setup}
+library(sf)
+library(terra)
+library(osmdata)
+library(dplyr)
+library(ggplot2)
+library(AOI)
+```
+
+## 1. Define River Object
+
+```{r river-object}
+aoi_fc <- AOI::geocode("Fort Collins, CO", bbox = TRUE)
+
+iosm <- opq(bbox = st_bbox(aoi_fc)) %>%
+  add_osm_feature(key = "waterway") %>%
+  osmdata_sf()
+osm_lines <- iosm$osm_lines
+
+poudre_river <- osm_lines %>%
+  filter(name == "Cache la Poudre River") %>%
+  st_union() %>%
+  st_as_sf()
+
+river_length_raw <- st_length(poudre_river)
+```
+
+## 2. Define and Crop DEM Object
+
+```{r dem-object}
+Sys.setenv("AWS_NO_SIGN_REQUEST" = "TRUE")
+
+dem_vrt <- rast("/vsis3/lynker-spatial/gridded-resources/dem.vrt")
+
+dem_crs     <- crs(dem_vrt)
+aoi_fc_proj <- st_transform(aoi_fc, dem_crs)
+dem         <- crop(dem_vrt, vect(aoi_fc_proj))
+
+names(dem) <- "elevation_cm"
+
+dem
+```
+
+## 3. Reproject River and Extract Elevation
+
+```{r extract-elev}
+poudre_river_proj <- st_transform(poudre_river, dem_crs)
+poudre_pts_proj  <- poudre_river_proj %>% st_cast("POINT")
+
+elev_vals <- terra::extract(dem, vect(poudre_pts_proj), bind = FALSE)
+
+profile <- poudre_pts_proj %>%
+  bind_cols(elev_vals %>% select(elevation_cm)) %>%
+  mutate(
+    ID          = row_number(),
+    elevation_m = elevation_cm / 100
+  )
+
+na_count <- sum(is.na(profile$elevation_cm))
+message("Number of NA elevation values: ", na_count)
+```
+
+## 4. Compute Sinuosity
+
+```{r sinuosity}
+dist_straight_m <- as.numeric(
+  st_distance(profile[1, ], profile[nrow(profile), ])
+)
+
+river_length_m <- as.numeric(st_length(poudre_river_proj))
+
+sinuosity <- river_length_m / dist_straight_m
+sinuosity
+```
+
+#This shows that the river is constantly twisting and turning and never stays straight for too long.  Yes this very much makes sense having been to the Poudre several times.
+
+## 5. Compute Slope
+
+```{r slope}
+elev_change_m <- profile$elevation_m[nrow(profile)] - profile$elevation_m[1]
+
+slope <- elev_change_m / river_length_m
+slope
+```
+
+#197,781cm-146,730cm= 51,051cm.  The river is 203km long which makes the slope 0.0025.
+
+## 6. Line Plot of Elevation Profile
+
+```{r plot-profile-line}
+ggplot(profile, aes(x = ID, y = elevation_m)) +
+  geom_line(size = 1) +
+  labs(
+    x = "Point Index Along River",
+    y = "Elevation (m)",
+    title = "Cache la Poudre River Elevation Profile"
+  ) +
+  theme_minimal()
+```
+
+## 7. Spatial Map Colored by Elevation
+
+```{r plot-profile-spatial}
+ggplot() +
+  geom_sf(data = profile, aes(color = elevation_m), size = 1) +
+  scale_color_viridis_c(name = "Elevation (m)") +
+  labs(
+    title = "Cache la Poudre River Spatial Profile",
+    subtitle = "Colored by Elevation"
+  ) +
+  theme_minimal()
+```
+
